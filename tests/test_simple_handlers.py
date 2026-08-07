@@ -54,7 +54,7 @@ def test_handle_get_root_not_found():
 
 def test_handle_get_item_various_fields():
     class FakeClientItem:
-        def get_item(self, collection_id, item_id):  # noqa: ARG002
+        def get_item(self, collection_id, item_id, sign_assets=False):  # noqa: ARG002
             return {
                 "id": "i1",
                 "collection": collection_id,

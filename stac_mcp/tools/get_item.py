@@ -15,7 +15,8 @@ def handle_get_item(
 ) -> list[TextContent] | dict[str, Any]:
     collection_id = arguments["collection_id"]
     item_id = arguments["item_id"]
-    item = client.get_item(collection_id, item_id)
+    sign_assets = arguments.get("sign_assets", False)
+    item = client.get_item(collection_id, item_id, sign_assets=sign_assets)
     if item is None:
         return {"type": "item", "item": None}
     if arguments.get("output_format") == "json":

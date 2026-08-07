@@ -19,6 +19,7 @@ def handle_search_items(
     query = arguments.get("query")
     limit = arguments.get("limit", 10)
     fields = arguments.get("fields")
+    sign_assets = arguments.get("sign_assets", False)
     items = client.search_items(
         collections=collections,
         bbox=bbox,
@@ -26,6 +27,7 @@ def handle_search_items(
         query=query,
         fields=fields,
         limit=limit,
+        sign_assets=sign_assets,
     )
     returned = len(items)
     has_more = returned >= limit
