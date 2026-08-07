@@ -456,6 +456,7 @@ class STACClient:
         sortby: list[str] | list[dict[str, str]] | None = None,
         fields: list[str] | None = None,
         limit: int = 10,
+        sign_assets: bool = False,
     ) -> list[Any] | list[dict[str, Any]]:
         extra_args = {}
         if query:
@@ -480,9 +481,11 @@ class STACClient:
             logger.exception("Error searching items")
             raise
 
-        return items
+        return self._sign_items(items, sign_assets)
 
-    def get_item(self, collection_id: str, item_id: str) -> dict[str, Any]:
+    def get_item(
+        self, collection_id: str, item_id: str, sign_assets: bool = False
+    ) -> dict[str, Any]:
         try:
             collection = self.client.get_collection(collection_id)
             if collection is None:
@@ -499,7 +502,7 @@ class STACClient:
             if item is None:
                 return None
             # Normalize defensively as above
-            return {
+            result = {
                 "id": getattr(item, "id", None),
                 "collection": getattr(item, "collection_id", None),
                 "geometry": getattr(item, "geometry", None),
@@ -514,6 +517,9 @@ class STACClient:
                     k: v.to_dict() for k, v in getattr(item, "assets", {}).items()
                 },
             }
+            if sign_assets:
+                result = self._sign_item(result)
+            return result
 
     # ------------------------- Data Size Estimation ----------------------- #
     def estimate_data_size(
@@ -1201,6 +1207,59 @@ class STACClient:
             # Best-effort: leave href unchanged when signing is not possible
             return href
         return href
+
+    def _is_planetary_computer(self) -> bool:
+        """Check if the catalog URL is for Microsoft Planetary Computer."""
+        return "planetarycomputer.microsoft.com" in self.catalog_url
+
+    def _sign_item(self, item: dict[str, Any]) -> dict[str, Any]:
+        """Sign asset hrefs in an item for Planetary Computer access.
+
+        Returns a new dict with signed asset hrefs. If signing fails or
+        the catalog is not Planetary Computer, returns the item unchanged.
+        """
+        if not self._is_planetary_computer():
+            return item
+
+        try:
+            import planetary_computer as pc  # noqa: PLC0415
+        except (ImportError, ModuleNotFoundError):
+            logger.warning(
+                "planetary_computer package not installed. "
+                "Install with: pip install planetary-computer"
+            )
+            return item
+
+        signed_item = dict(item)
+        assets = signed_item.get("assets", {})
+        if isinstance(assets, dict):
+            signed_assets = {}
+            for name, asset in assets.items():
+                if isinstance(asset, dict):
+                    signed_asset = dict(asset)
+                    href = signed_asset.get("href")
+                    if href:
+                        try:
+                            signed_href = pc.sign(href)
+                            if isinstance(signed_href, str):
+                                signed_asset["href"] = signed_href
+                            elif isinstance(signed_href, dict):
+                                signed_asset["href"] = signed_href.get("url", href)
+                        except Exception:  # noqa: BLE001
+                            logger.debug("Failed to sign asset %s", name)
+                    signed_assets[name] = signed_asset
+                else:
+                    signed_assets[name] = asset
+            signed_item["assets"] = signed_assets
+        return signed_item
+
+    def _sign_items(
+        self, items: list[dict[str, Any]], sign_assets: bool
+    ) -> list[dict[str, Any]]:
+        """Sign asset hrefs in items if requested and catalog is Planetary Computer."""
+        if not sign_assets or not self._is_planetary_computer():
+            return items
+        return [self._sign_item(item) for item in items]
 
     def _head_content_length(self, href: str) -> int | None:
         # Simple retry with exponential backoff for transient failures.

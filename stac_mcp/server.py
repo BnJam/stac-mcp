@@ -98,15 +98,26 @@ async def get_item(
     collection_id: str,
     item_id: str,
     output_format: str | None = "text",
+    sign_assets: bool | None = False,
     catalog_url: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Get a specific STAC Item by collection and item ID."""
+    """Get a specific STAC Item by collection and item ID.
+
+    Args:
+        collection_id: The collection ID.
+        item_id: The item ID.
+        output_format: Output format ("text" or "json").
+        sign_assets: If True and catalog is Planetary Computer, sign asset URLs
+                     for direct access. Requires planetary-computer package.
+        catalog_url: Optional catalog URL override.
+    """
     return await execution.execute_tool(
         "get_item",
         arguments={
             "collection_id": collection_id,
             "item_id": item_id,
             "output_format": output_format,
+            "sign_assets": sign_assets,
         },
         catalog_url=catalog_url,
         headers=None,
@@ -122,6 +133,7 @@ async def search_items(
     query: dict[str, Any] | str | None = None,
     fields: list[str] | str | None = None,
     output_format: str | None = "text",
+    sign_assets: bool | None = False,
     catalog_url: str | None = None,
 ) -> list[dict[str, Any]]:
     """Search for STAC items.
@@ -135,6 +147,8 @@ async def search_items(
         fields: List of fields to include/exclude (e.g., ["id", "properties.datetime"]).
                 Prefix with "-" to exclude (e.g., ["-properties.eo:cloud_cover"]).
         output_format: Output format ("text" or "json").
+        sign_assets: If True and catalog is Planetary Computer, sign asset URLs
+                     for direct access. Requires planetary-computer package.
         catalog_url: Optional catalog URL override.
     """
     arguments = preprocess_parameters(
@@ -146,6 +160,7 @@ async def search_items(
             "query": query,
             "fields": fields,
             "output_format": output_format,
+            "sign_assets": sign_assets,
         }
     )
     return await execution.execute_tool(
