@@ -36,11 +36,69 @@ All tools accept an optional `output_format` parameter (`"text"` default, or `"j
 
 - **`get_root`**: Fetch root document (id/title/description/links/conformance subset)
 - **`get_conformance`**: List all conformance classes; optionally verify specific URIs
+- **`get_capabilities`**: Get a summary of STAC API capabilities (query, sort, fields, queryables, aggregation, filter)
 - **`search_collections`**: List and search available STAC collections
 - **`get_collection`**: Get detailed information about a specific collection
 - **`search_items`**: Search for STAC items with spatial, temporal, and attribute filters
 - **`get_item`**: Get detailed information about a specific STAC item
+- **`get_queryables`**: Get queryable properties for a collection
+- **`get_aggregations`**: Get aggregations for STAC items
 - **`estimate_data_size`**: Estimate data size for STAC items using lazy loading (XArray + odc.stac)
+
+#### Search Parameters
+
+The `search_items` tool supports comprehensive STAC API search parameters:
+
+- **`collections`**: One or more collection IDs to search
+- **`bbox`**: Bounding box [west, south, east, north] or GeoJSON geometry
+- **`datetime`**: Datetime filter (e.g., "2020-01-01/2020-12-31")
+- **`limit`**: Maximum number of items to return
+- **`query`**: Query filter for properties
+- **`fields`**: List of fields to include/exclude (e.g., ["id", "properties.datetime"])
+- **`intersects`**: GeoJSON geometry for spatial intersection queries
+- **`ids`**: List of specific item IDs to retrieve (batch fetch)
+- **`sortby`**: Sort order (e.g., ["-properties.datetime"] for descending)
+- **`sign_assets`**: If True and catalog is Planetary Computer, sign asset URLs for direct access
+
+#### Pagination Support
+
+Search responses include pagination metadata with cursor-based navigation links:
+
+```json
+{
+  "type": "item_list",
+  "count": 10,
+  "items": [...],
+  "meta": {
+    "catalog_url": "https://example.com/stac",
+    "parameters": {...},
+    "returned": 10,
+    "has_more": true,
+    "links": [
+      {"rel": "next", "href": "https://example.com/stac/search?token=abc123"},
+      {"rel": "prev", "href": "https://example.com/stac/search?token=xyz789"}
+    ]
+  }
+}
+```
+
+#### Planetary Computer Asset Signing
+
+When working with Microsoft Planetary Computer catalogs, you can enable asset signing to get signed URLs for direct asset access:
+
+```json
+{
+  "method": "tools/call",
+  "params": {
+    "name": "search_items",
+    "arguments": {
+      "collections": ["sentinel-2-l2a"],
+      "limit": 5,
+      "sign_assets": true
+    }
+  }
+}
+```
 
 ### Capability Discovery & Aggregations
 
@@ -93,9 +151,7 @@ podman run --rm -i ghcr.io/wayfinder-foundry/stac-mcp:latest
 
 ### Examples
 
-#### Example: JSON Output Mode
-Below is an illustrative (client-side) pseudo-call showing `output_format` usage through an MCP client message:
-
+#### Example: Basic Search
 ```jsonc
 {
   "method": "tools/call",
@@ -114,9 +170,54 @@ Below is an illustrative (client-side) pseudo-call showing `output_format` usage
 
 The server responds with a single `TextContent` whose text is a JSON string like:
 ```json
-{"mode":"json","data":{"type":"item_list","count":5,"items":[{"id":"..."}]}}
+{
+  "type": "item_list",
+  "count": 5,
+  "items": [{"id": "..."}],
+  "meta": {
+    "catalog_url": "https://example.com/stac",
+    "parameters": {...},
+    "returned": 5,
+    "has_more": false,
+    "links": []
+  }
+}
 ```
-This wrapping keeps the MCP content type stable while enabling machine-readable chaining.
+
+#### Example: Advanced Search with Sorting and Field Selection
+```jsonc
+{
+  "method": "tools/call",
+  "params": {
+    "name": "search_items",
+    "arguments": {
+      "collections": ["sentinel-2-l2a"],
+      "intersects": {
+        "type": "Point",
+        "coordinates": [-122.4194, 37.7749]
+      },
+      "sortby": ["-properties.datetime"],
+      "fields": ["id", "properties.datetime", "properties.eo:cloud_cover"],
+      "limit": 10,
+      "output_format": "json"
+    }
+  }
+}
+```
+
+#### Example: Batch Fetch Specific Items
+```jsonc
+{
+  "method": "tools/call",
+  "params": {
+    "name": "search_items",
+    "arguments": {
+      "ids": ["item1", "item2", "item3"],
+      "output_format": "json"
+    }
+  }
+}
+```
 
 ## Development
 

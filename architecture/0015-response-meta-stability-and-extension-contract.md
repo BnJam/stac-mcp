@@ -1,6 +1,6 @@
 # ADR 0015: Response Meta Stability & Extension Contract
 
-Status: Proposed  
+Status: Implemented  
 Date: 2025-09-26
 
 ## Context
@@ -69,4 +69,4 @@ Cons / Trade-offs:
 - Need for a deprecation notice mechanism surfaced through meta itself?
 
 ## Addendums
-- None yet.
+- 2026-08-07: Implemented in PR #142. Added `links` array to response metadata containing pagination links (next/prev) from STAC API search results. This enables cursor-based pagination for agents to navigate large result sets.

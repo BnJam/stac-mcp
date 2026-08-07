@@ -1,6 +1,6 @@
 # ADR 0005: Optional Planetary Computer Asset Signing
 
-Status: Accepted
+Status: Implemented
 Date: 2025-09-18
 
 ## Context
@@ -24,3 +24,4 @@ Date: 2025-09-18
 
 ## Addendums
 - 2026-08-06: Accepted. Implementation adds `sign_assets` parameter to `search_items` and `get_item` tools. When enabled and catalog is Planetary Computer, asset URLs are signed using the optional `planetary-computer` package.
+- 2026-08-07: Implemented in PR #140. The `sign_assets` parameter is now available on `search_items` and `get_item` tools. When enabled and the catalog is Planetary Computer, asset URLs are automatically signed for direct access.

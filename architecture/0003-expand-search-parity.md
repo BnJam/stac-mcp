@@ -1,6 +1,6 @@
 # ADR 0003: Expand Search to Parity with pystac-client
 
-Status: Accepted
+Status: Implemented
 Date: 2025-09-18
 
 ## Context
@@ -31,3 +31,4 @@ Date: 2025-09-18
 
 ## Addendums
 - 2025-09-18: See ASR 1005 (Performance Bounds for Search Operations) for default limits, pagination controls, and response metadata.
+- 2026-08-07: Implemented in PRs #141 and #142. Added `intersects`, `ids`, `sortby`, and `fields` parameters to `search_items`. Implemented cursor-based pagination with `links` array in response metadata containing `next` and `prev` links.
