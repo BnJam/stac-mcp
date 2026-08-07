@@ -63,3 +63,31 @@ async def test_get_conformance_no_classes(test_app):
     assert len(result.content) > 0
     text = result.content[0].text
     assert "Conformance Classes (0)" in text
+
+
+@pytest.mark.asyncio
+async def test_get_capabilities_returns_summary(test_app):
+    """Test get_capabilities returns a capability summary."""
+
+    def dummy_get_capabilities(
+        output_format: Literal["text", "json"] = "text",  # noqa: ARG001
+        catalog_url: str | None = None,  # noqa: ARG001
+    ) -> ToolResult:
+        return ToolResult(
+            content=[
+                TextContent(
+                    type="text",
+                    text="**STAC API Capabilities**\n\n**Supported (2):**\n",
+                )
+            ],
+            structured_content={"result": []},
+        )
+
+    test_app.tool(name="get_capabilities")(dummy_get_capabilities)
+
+    client = Client(test_app)
+    async with client:
+        result = await client.call_tool("get_capabilities", {})
+    assert len(result.content) > 0
+    text = result.content[0].text
+    assert "STAC API Capabilities" in text

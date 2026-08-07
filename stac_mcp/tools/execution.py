@@ -19,6 +19,7 @@ from stac_mcp.observability import instrument_tool_execution, record_tool_result
 from stac_mcp.tools.client import STACClient
 from stac_mcp.tools.estimate_data_size import handle_estimate_data_size
 from stac_mcp.tools.get_aggregations import handle_get_aggregations
+from stac_mcp.tools.get_capabilities import handle_get_capabilities
 from stac_mcp.tools.get_collection import handle_get_collection
 from stac_mcp.tools.get_conformance import handle_get_conformance
 from stac_mcp.tools.get_item import handle_get_item
@@ -61,6 +62,7 @@ _TOOL_HANDLERS: dict[str, Handler] = {
     "estimate_data_size": handle_estimate_data_size,
     "get_root": handle_get_root,
     "get_conformance": handle_get_conformance,
+    "get_capabilities": handle_get_capabilities,
     "get_queryables": handle_get_queryables,
     "get_aggregations": handle_get_aggregations,
     "sensor_registry_info": handle_sensor_registry_info,

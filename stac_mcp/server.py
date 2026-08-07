@@ -30,11 +30,40 @@ async def get_root(
 
 @app.tool
 async def get_conformance(
+    check: list[str] | str | None = None,
     catalog_url: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Return server conformance classes."""
+    """Return server conformance classes.
+
+    Args:
+        check: Optional list of conformance URIs to check support for.
+               If provided, returns a boolean for each URI indicating support.
+        catalog_url: Optional catalog URL override.
+    """
+    arguments = preprocess_parameters({"check": check})
     return await execution.execute_tool(
-        "get_conformance", arguments={}, catalog_url=catalog_url, headers=None
+        "get_conformance", arguments=arguments, catalog_url=catalog_url, headers=None
+    )
+
+
+@app.tool
+async def get_capabilities(
+    output_format: str | None = "text",
+    catalog_url: str | None = None,
+) -> list[dict[str, Any]]:
+    """Return a summary of STAC API capabilities.
+
+    Maps conformance classes to human-readable capability names, making it
+    easier for agents to discover what features a catalog supports (e.g.,
+    query, sort, fields, aggregations).
+
+    Args:
+        output_format: Output format ("text" or "json").
+        catalog_url: Optional catalog URL override.
+    """
+    arguments = preprocess_parameters({"output_format": output_format})
+    return await execution.execute_tool(
+        "get_capabilities", arguments=arguments, catalog_url=catalog_url, headers=None
     )
 
 
