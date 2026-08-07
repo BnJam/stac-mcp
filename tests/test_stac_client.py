@@ -188,6 +188,8 @@ def test_search_items_with_sortby_checks_conformance(stac_client, monkeypatch):
         query=None,
         sortby=sort_spec,
         fields=None,
+        intersects=None,
+        ids=None,
         limit=10,
     )
 
@@ -214,6 +216,8 @@ def test_search_items_with_fields_checks_conformance(stac_client, monkeypatch):
         query=None,
         sortby=None,
         fields=fields_spec,
+        intersects=None,
+        ids=None,
         limit=10,
     )
 
@@ -259,3 +263,124 @@ def test_check_conformance_handles_older_uri_versions(stac_client, monkeypatch):
         pytest.fail(
             "Conformance check failed for a valid (older) URI",
         )
+
+
+def test_search_items_with_intersects(stac_client, monkeypatch):
+    """Test that intersects parameter is passed through correctly."""
+    search_mock = MagicMock()
+    search_mock.items.return_value = []
+    mock_client = MagicMock()
+    mock_client.search.return_value = search_mock
+    monkeypatch.setattr(stac_client, "_client", mock_client)
+
+    intersects = {
+        "type": "Point",
+        "coordinates": [-122.4194, 37.7749],
+    }
+    stac_client.search_items(intersects=intersects)
+    mock_client.search.assert_called_with(
+        collections=None,
+        bbox=None,
+        datetime=None,
+        query=None,
+        sortby=None,
+        fields=None,
+        intersects=intersects,
+        ids=None,
+        limit=10,
+    )
+
+
+def test_search_items_with_ids(stac_client, monkeypatch):
+    """Test that ids parameter is passed through correctly."""
+    search_mock = MagicMock()
+    search_mock.items.return_value = []
+    mock_client = MagicMock()
+    mock_client.search.return_value = search_mock
+    monkeypatch.setattr(stac_client, "_client", mock_client)
+
+    ids = ["item1", "item2", "item3"]
+    stac_client.search_items(ids=ids)
+    mock_client.search.assert_called_with(
+        collections=None,
+        bbox=None,
+        datetime=None,
+        query=None,
+        sortby=None,
+        fields=None,
+        intersects=None,
+        ids=ids,
+        limit=10,
+    )
+
+
+def test_search_items_combined_parameters(stac_client, monkeypatch):
+    """Test that multiple new parameters can be used together."""
+    search_mock = MagicMock()
+    search_mock.items.return_value = []
+    mock_client = MagicMock()
+    mock_client.search.return_value = search_mock
+    monkeypatch.setattr(stac_client, "_client", mock_client)
+    monkeypatch.setattr(stac_client, "_conformance", CONFORMANCE_SORT)
+
+    params = {
+        "collections": ["sentinel-2-l2a"],
+        "intersects": {"type": "Point", "coordinates": [-122.4194, 37.7749]},
+        "ids": ["item1", "item2"],
+        "sortby": ["-properties.datetime"],
+        "limit": 5,
+    }
+    stac_client.search_items(**params)
+    mock_client.search.assert_called_with(
+        collections=["sentinel-2-l2a"],
+        bbox=None,
+        datetime=None,
+        query=None,
+        sortby=["-properties.datetime"],
+        fields=None,
+        intersects={"type": "Point", "coordinates": [-122.4194, 37.7749]},
+        ids=["item1", "item2"],
+        limit=5,
+    )
+
+
+def test_search_cache_key_includes_new_params(stac_client):
+    """Test that cache key includes intersects, ids, and sortby."""
+    key1 = stac_client._search_cache_key(  # noqa: SLF001
+        collections=["col1"],
+        bbox=None,
+        datetime=None,
+        query=None,
+        limit=10,
+        fields=None,
+        intersects={"type": "Point", "coordinates": [0, 0]},
+        ids=["item1"],
+        sortby=["-datetime"],
+    )
+    key2 = stac_client._search_cache_key(  # noqa: SLF001
+        collections=["col1"],
+        bbox=None,
+        datetime=None,
+        query=None,
+        limit=10,
+        fields=None,
+        intersects={"type": "Point", "coordinates": [1, 1]},
+        ids=["item1"],
+        sortby=["-datetime"],
+    )
+    key3 = stac_client._search_cache_key(  # noqa: SLF001
+        collections=["col1"],
+        bbox=None,
+        datetime=None,
+        query=None,
+        limit=10,
+        fields=None,
+        intersects={"type": "Point", "coordinates": [0, 0]},
+        ids=["item2"],
+        sortby=["-datetime"],
+    )
+
+    # Different intersects should produce different keys
+    assert key1 != key2
+    # Different ids should produce different keys
+    assert key1 != key3

@@ -19,6 +19,9 @@ def handle_search_items(
     query = arguments.get("query")
     limit = arguments.get("limit", 10)
     fields = arguments.get("fields")
+    intersects = arguments.get("intersects")
+    ids = arguments.get("ids")
+    sortby = arguments.get("sortby")
     sign_assets = arguments.get("sign_assets", False)
     items = client.search_items(
         collections=collections,
@@ -26,6 +29,9 @@ def handle_search_items(
         datetime=dt,
         query=query,
         fields=fields,
+        intersects=intersects,
+        ids=ids,
+        sortby=sortby,
         limit=limit,
         sign_assets=sign_assets,
     )
@@ -39,6 +45,9 @@ def handle_search_items(
             "datetime": dt,
             "limit": limit,
             "fields": fields,
+            "intersects": intersects,
+            "ids": ids,
+            "sortby": sortby,
         },
         "returned": returned,
         "has_more": has_more,

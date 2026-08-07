@@ -126,12 +126,15 @@ async def get_item(
 
 @app.tool
 async def search_items(
-    collections: list[str] | str,
+    collections: list[str] | str | None = None,
     bbox: list[float] | str | None = None,
     datetime: str | None = None,
     limit: int | None = 10,
     query: dict[str, Any] | str | None = None,
     fields: list[str] | str | None = None,
+    intersects: dict[str, Any] | str | None = None,
+    ids: list[str] | str | None = None,
+    sortby: list[str] | str | None = None,
     output_format: str | None = "text",
     sign_assets: bool | None = False,
     catalog_url: str | None = None,
@@ -146,6 +149,10 @@ async def search_items(
         query: Query filter for properties.
         fields: List of fields to include/exclude (e.g., ["id", "properties.datetime"]).
                 Prefix with "-" to exclude (e.g., ["-properties.eo:cloud_cover"]).
+        intersects: GeoJSON geometry for spatial intersection query.
+        ids: List of specific item IDs to retrieve.
+        sortby: Sort order (e.g., ["-properties.datetime"] for descending,
+                ["+properties.datetime"] for ascending).
         output_format: Output format ("text" or "json").
         sign_assets: If True and catalog is Planetary Computer, sign asset URLs
                      for direct access. Requires planetary-computer package.
@@ -159,6 +166,9 @@ async def search_items(
             "limit": limit,
             "query": query,
             "fields": fields,
+            "intersects": intersects,
+            "ids": ids,
+            "sortby": sortby,
             "output_format": output_format,
             "sign_assets": sign_assets,
         }
