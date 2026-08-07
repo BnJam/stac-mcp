@@ -225,6 +225,9 @@ class STACClient:
         query: dict[str, Any] | None,
         limit: int,
         fields: list[str] | None = None,
+        intersects: dict[str, Any] | None = None,
+        ids: list[str] | None = None,
+        sortby: list[str] | list[dict[str, str]] | None = None,
     ) -> str:
         """Create a deterministic cache key for search parameters."""
         # Include the identity of the underlying client object so that tests
@@ -240,6 +243,9 @@ class STACClient:
             "query": query,
             "limit": limit,
             "fields": fields or [],
+            "intersects": intersects,
+            "ids": ids or [],
+            "sortby": sortby,
             "client_id": client_id,
         }
         # Use json.dumps with sort_keys for deterministic serialization.
@@ -253,6 +259,8 @@ class STACClient:
         query: dict[str, Any] | None = None,
         sortby: list[str] | list[dict[str, str]] | None = None,
         fields: list[str] | None = None,
+        intersects: dict[str, Any] | None = None,
+        ids: list[str] | None = None,
         limit: int = 10,
     ):  # -> list[dict[str, Any]]:
         """Run a search and cache the resulting item list per-client.
@@ -260,7 +268,9 @@ class STACClient:
         Returns a list of pystac.Item objects (as returned by the underlying
         client's search.items()).
         """
-        key = self._search_cache_key(collections, bbox, datetime, query, limit, fields)
+        key = self._search_cache_key(
+            collections, bbox, datetime, query, limit, fields, intersects, ids, sortby
+        )
         now = time.time()
         cached = self._search_cache.get(key)
         if cached is not None:
@@ -288,6 +298,8 @@ class STACClient:
             query=query,
             sortby=sortby,
             fields=fields,
+            intersects=intersects,
+            ids=ids,
             limit=limit,
         )
         items = []
@@ -456,6 +468,8 @@ class STACClient:
         query: dict[str, Any] | None = None,
         sortby: list[str] | list[dict[str, str]] | None = None,
         fields: list[str] | None = None,
+        intersects: dict[str, Any] | None = None,
+        ids: list[str] | None = None,
         limit: int = 10,
         sign_assets: bool = False,
     ) -> list[Any] | list[dict[str, Any]]:
@@ -476,6 +490,8 @@ class STACClient:
                 bbox=bbox,
                 datetime=datetime,
                 limit=limit,
+                intersects=intersects,
+                ids=ids,
                 **extra_args,
             )
         except APIError:  # pragma: no cover - network dependent
