@@ -13,6 +13,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from stac_mcp.tools.client import (
+    CONFORMANCE_FIELDS,
     CONFORMANCE_QUERY,
     CONFORMANCE_QUERYABLES,
     CONFORMANCE_SORT,
@@ -186,6 +187,7 @@ def test_search_items_with_sortby_checks_conformance(stac_client, monkeypatch):
         datetime=None,
         query=None,
         sortby=sort_spec,
+        fields=None,
         limit=10,
     )
 
@@ -193,6 +195,31 @@ def test_search_items_with_sortby_checks_conformance(stac_client, monkeypatch):
     monkeypatch.setattr(stac_client, "_conformance", ["core"])
     with pytest.raises(ConformanceError):
         stac_client.search_items(sortby=sort_spec)
+
+
+def test_search_items_with_fields_checks_conformance(stac_client, monkeypatch):
+    search_mock = MagicMock()
+    search_mock.items.return_value = []
+    mock_client = MagicMock()
+    mock_client.search.return_value = search_mock
+    monkeypatch.setattr(stac_client, "_client", mock_client)
+    monkeypatch.setattr(stac_client, "_conformance", CONFORMANCE_FIELDS)
+
+    fields_spec = ["id", "properties.datetime"]
+    stac_client.search_items(fields=fields_spec)
+    mock_client.search.assert_called_with(
+        collections=None,
+        bbox=None,
+        datetime=None,
+        query=None,
+        sortby=None,
+        fields=fields_spec,
+        limit=10,
+    )
+
+    monkeypatch.setattr(stac_client, "_conformance", ["core"])
+    with pytest.raises(ConformanceError):
+        stac_client.search_items(fields=fields_spec)
 
 
 def test_get_queryables_raises_if_unsupported(stac_client, monkeypatch):

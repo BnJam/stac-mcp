@@ -18,11 +18,13 @@ def handle_search_items(
     dt = arguments.get("datetime")
     query = arguments.get("query")
     limit = arguments.get("limit", 10)
+    fields = arguments.get("fields")
     items = client.search_items(
         collections=collections,
         bbox=bbox,
         datetime=dt,
         query=query,
+        fields=fields,
         limit=limit,
     )
     if arguments.get("output_format") == "json":

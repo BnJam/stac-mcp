@@ -91,10 +91,23 @@ async def search_items(
     datetime: str | None = None,
     limit: int | None = 10,
     query: dict[str, Any] | str | None = None,
+    fields: list[str] | str | None = None,
     output_format: str | None = "text",
     catalog_url: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Search for STAC items."""
+    """Search for STAC items.
+
+    Args:
+        collections: One or more collection IDs to search.
+        bbox: Bounding box [west, south, east, north] or GeoJSON geometry.
+        datetime: Datetime filter (e.g., "2020-01-01/2020-12-31").
+        limit: Maximum number of items to return.
+        query: Query filter for properties.
+        fields: List of fields to include/exclude (e.g., ["id", "properties.datetime"]).
+                Prefix with "-" to exclude (e.g., ["-properties.eo:cloud_cover"]).
+        output_format: Output format ("text" or "json").
+        catalog_url: Optional catalog URL override.
+    """
     arguments = preprocess_parameters(
         {
             "collections": collections,
@@ -102,6 +115,7 @@ async def search_items(
             "datetime": datetime,
             "limit": limit,
             "query": query,
+            "fields": fields,
             "output_format": output_format,
         }
     )

@@ -74,6 +74,10 @@ CONFORMANCE_QUERYABLES = [
 CONFORMANCE_SORT = [
     "https://api.stacspec.org/v1.0.0/item-search#sort",
 ]
+CONFORMANCE_FIELDS = [
+    "https://api.stacspec.org/v1.0.0/item-search#fields",
+    "https://api.stacspec.org/v1.0.0-beta.2/item-search#fields",
+]
 
 
 # Initialized earlier for the timeout wrapper fallback
@@ -219,6 +223,7 @@ class STACClient:
         datetime: str | None,
         query: dict[str, Any] | None,
         limit: int,
+        fields: list[str] | None = None,
     ) -> str:
         """Create a deterministic cache key for search parameters."""
         # Include the identity of the underlying client object so that tests
@@ -233,6 +238,7 @@ class STACClient:
             "datetime": datetime,
             "query": query,
             "limit": limit,
+            "fields": fields or [],
             "client_id": client_id,
         }
         # Use json.dumps with sort_keys for deterministic serialization.
@@ -245,6 +251,7 @@ class STACClient:
         datetime: str | None = None,
         query: dict[str, Any] | None = None,
         sortby: list[str] | list[dict[str, str]] | None = None,
+        fields: list[str] | None = None,
         limit: int = 10,
     ):  # -> list[dict[str, Any]]:
         """Run a search and cache the resulting item list per-client.
@@ -252,7 +259,7 @@ class STACClient:
         Returns a list of pystac.Item objects (as returned by the underlying
         client's search.items()).
         """
-        key = self._search_cache_key(collections, bbox, datetime, query, limit)
+        key = self._search_cache_key(collections, bbox, datetime, query, limit, fields)
         now = time.time()
         cached = self._search_cache.get(key)
         if cached is not None:
@@ -279,6 +286,7 @@ class STACClient:
             datetime=datetime,
             query=query,
             sortby=sortby,
+            fields=fields,
             limit=limit,
         )
         items = []
@@ -446,6 +454,7 @@ class STACClient:
         datetime: str | None = None,
         query: dict[str, Any] | None = None,
         sortby: list[str] | list[dict[str, str]] | None = None,
+        fields: list[str] | None = None,
         limit: int = 10,
     ) -> list[Any] | list[dict[str, Any]]:
         extra_args = {}
@@ -455,6 +464,9 @@ class STACClient:
         if sortby:
             self._check_conformance(CONFORMANCE_SORT)
             extra_args["sortby"] = sortby
+        if fields:
+            self._check_conformance(CONFORMANCE_FIELDS)
+            extra_args["fields"] = fields
         try:
             # Use cached search results (per-client) when available.
             items = self._cached_search(
