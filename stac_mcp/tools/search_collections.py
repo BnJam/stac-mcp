@@ -14,13 +14,25 @@ def handle_search_collections(
 ) -> list[TextContent] | dict[str, Any]:
     limit = arguments.get("limit", 10)
     collections = client.search_collections(limit=limit)
+    returned = len(collections)
+    has_more = returned >= limit
+    meta = {
+        "catalog_url": client.catalog_url,
+        "parameters": {"limit": limit},
+        "returned": returned,
+        "has_more": has_more,
+    }
     if arguments.get("output_format") == "json":
         return {
             "type": "collection_list",
-            "count": len(collections),
+            "count": returned,
             "collections": collections,
+            "meta": meta,
         }
-    result_text = f"Found {len(collections)} collections:\n\n"
+    result_text = f"Found {returned} collections"
+    if has_more:
+        result_text += f" (limit {limit}, more may exist)"
+    result_text += ":\n\n"
     for collection in collections:
         title = collection.get("title") or collection.get("id", "Untitled collection")
         identifier = collection.get("id", "unknown")

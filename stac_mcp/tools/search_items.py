@@ -27,9 +27,26 @@ def handle_search_items(
         fields=fields,
         limit=limit,
     )
+    returned = len(items)
+    has_more = returned >= limit
+    meta = {
+        "catalog_url": client.catalog_url,
+        "parameters": {
+            "collections": collections,
+            "bbox": bbox,
+            "datetime": dt,
+            "limit": limit,
+            "fields": fields,
+        },
+        "returned": returned,
+        "has_more": has_more,
+    }
     if arguments.get("output_format") == "json":
-        return {"type": "item_list", "count": len(items), "items": items}
-    result_text = f"Found {len(items)} items:\n\n"
+        return {"type": "item_list", "count": returned, "items": items, "meta": meta}
+    result_text = f"Found {returned} items"
+    if has_more:
+        result_text += f" (limit {limit}, more may exist)"
+    result_text += ":\n\n"
     asset_keys = set()
     for item in items:
         item_id = item.get("id", "unknown")
