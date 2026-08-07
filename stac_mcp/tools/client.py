@@ -9,6 +9,7 @@ import random
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
+from urllib.parse import urlparse
 
 import requests
 from pystac_client.exceptions import APIError
@@ -1210,7 +1211,8 @@ class STACClient:
 
     def _is_planetary_computer(self) -> bool:
         """Check if the catalog URL is for Microsoft Planetary Computer."""
-        return "planetarycomputer.microsoft.com" in self.catalog_url
+        parsed = urlparse(self.catalog_url)
+        return parsed.hostname == "planetarycomputer.microsoft.com"
 
     def _sign_item(self, item: dict[str, Any]) -> dict[str, Any]:
         """Sign asset hrefs in an item for Planetary Computer access.
