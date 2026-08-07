@@ -7,7 +7,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "stac-mcp"
-version = "6.4.0"
+version = "6.5.0"
 description = "An MCP Server for STAC requests"
 readme = "README.md"
 license = {text = "Apache-2.0"}
