@@ -1,6 +1,6 @@
 # ADR 0010: Environment Variable Based Configuration
 
-Status: Proposed
+Status: Accepted
 Date: 2025-09-23
 
 ## Context
@@ -36,3 +36,4 @@ Behavior:
 ## Addendums
 * Future: may add `STAC_MCP_CACHE_TTL_SECONDS` aligned with ADR 0011.
 * 2025-10-06: Added `STAC_MCP_SSL_INSECURE_FALLBACK` for limited, read-only retry on SSL verification failure to reduce friction in environments with intercepting proxies.
+* 2026-08-06: Accepted. Implementation verified: `STAC_MCP_REQUEST_TIMEOUT`, `STAC_MCP_SEARCH_CACHE_TTL_SECONDS`, and other env vars are in use across the codebase.

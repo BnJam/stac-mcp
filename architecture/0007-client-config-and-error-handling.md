@@ -1,6 +1,6 @@
 # ADR 0007: Client Configuration and Error Handling
 
-Status: Proposed
+Status: Accepted
 Date: 2025-09-18
 
 ## Context
@@ -25,3 +25,4 @@ Date: 2025-09-18
 
 ## Addendums
 - 2025-09-18: See ASR 1004 (Graceful Network Error Handling) for non-functional error-handling guarantees and testing guidance.
+- 2026-08-06: Accepted. Implementation verified: headers, timeout, and error mapping are implemented across tool handlers.
