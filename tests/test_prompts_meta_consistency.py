@@ -7,9 +7,9 @@ from stac_mcp.server import app
 @pytest.fixture
 def test_app():
     """Return a clean app for each test."""
-    original_tools = app._tool_manager._tools.copy()  # noqa: SLF001
+    original_tools = app._local_provider._components.copy()  # noqa: SLF001
     yield app
-    app._tool_manager._tools = original_tools  # noqa: SLF001
+    app._local_provider._components = original_tools  # noqa: SLF001
 
 
 @pytest.mark.asyncio
@@ -37,7 +37,7 @@ async def test_get_prompt_messages_include_machine_payload_for_all_prompts(test_
             )
             msg = result.messages[0]
             # PromptMessage should expose machine_payload on either `_meta` or `meta`
-            machine_meta = getattr(msg, "_meta", None) or getattr(msg, "meta", None)
+            machine_meta = getattr(msg.content, "meta", None)
             assert machine_meta is not None, (
                 f"Prompt {name} did not include _meta or meta"
             )

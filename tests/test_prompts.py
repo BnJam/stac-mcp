@@ -23,8 +23,11 @@ async def test_prompts_registered_and_return_machine_payload():
             assert hasattr(res, "messages")
             assert len(res.messages) > 0
             msg = res.messages[0]
-            machine_meta = getattr(msg, "_meta", None) or getattr(msg, "meta", None)
-            assert machine_meta is not None, f"Prompt {name} should expose _meta/meta"
+            # In fastmcp 3.x, meta is on the content, not the message itself
+            machine_meta = getattr(msg.content, "meta", None)
+            assert machine_meta is not None, (
+                f"Prompt {name} should expose meta on content"
+            )
             assert "machine_payload" in machine_meta, (
                 f"Prompt {name} should include machine_payload"
             )

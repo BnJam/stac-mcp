@@ -13,9 +13,9 @@ from stac_mcp.server import app
 @pytest.fixture
 def test_app():
     """Return a clean app for each test."""
-    original_tools = app._tool_manager._tools.copy()  # noqa: SLF001
+    original_tools = app._local_provider._components.copy()  # noqa: SLF001
     yield app
-    app._tool_manager._tools = original_tools  # noqa: SLF001
+    app._local_provider._components = original_tools  # noqa: SLF001
 
 
 @pytest.mark.asyncio

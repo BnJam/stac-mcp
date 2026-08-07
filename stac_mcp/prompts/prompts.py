@@ -16,7 +16,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from fastmcp.prompts.prompt import PromptMessage, TextContent
+from fastmcp.prompts.base import Message
+from mcp.types import TextContent
 
 
 def register_prompts(app: Any) -> None:
@@ -28,7 +29,7 @@ def register_prompts(app: Any) -> None:
         description="Information about the STAC sensor registry",
         meta={},
     )
-    def _prompt_sensor_registry_info() -> PromptMessage:
+    def _prompt_sensor_registry_info() -> list[Message]:
         human = (
             "The internal STAC sensor registry maps collection ids to native "
             "dtypes and provider-specific aliases. Use it as a fallback "
@@ -45,18 +46,23 @@ def register_prompts(app: Any) -> None:
             "parameters": {"type": "object", "properties": {}, "required": []},
             "example": {},
         }
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
 
     @app.prompt(
         name="stac_tool_overview_prompt",
         description="Overview of STAC tools available",
         meta={},
     )
-    def _prompt_stac_tool_overview() -> PromptMessage:
+    def _prompt_stac_tool_overview() -> list[Message]:
         human = (
             "Available STAC tools: get_root, get_conformance, search_collections, "
             "get_collection, get_queryables, search_items, get_item, and "
@@ -68,11 +74,16 @@ def register_prompts(app: Any) -> None:
             "parameters": {},
             "example": {},
         }
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
 
     @app.prompt(
         name="tool_get_root_prompt",
@@ -88,7 +99,7 @@ def register_prompts(app: Any) -> None:
             "example": {"catalog_url": "https://earth-search.aws.element84.com/v1"},
         },
     )
-    def _prompt_get_root() -> PromptMessage:
+    def _prompt_get_root() -> list[Message]:
         schema = {
             "type": "object",
             "properties": {
@@ -109,11 +120,16 @@ def register_prompts(app: Any) -> None:
             "Example:\n"
             f"{json.dumps(payload['example'], indent=2)}"
         )
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
 
     @app.prompt(
         name="tool_get_conformance_prompt",
@@ -129,7 +145,7 @@ def register_prompts(app: Any) -> None:
             "example": {},
         },
     )
-    def _prompt_get_conformance() -> PromptMessage:
+    def _prompt_get_conformance() -> list[Message]:
         schema = {
             "type": "object",
             "properties": {
@@ -150,11 +166,16 @@ def register_prompts(app: Any) -> None:
             "Example:\n"
             f"{json.dumps(payload['example'], indent=2)}"
         )
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
 
     @app.prompt(
         name="tool_search_collections_prompt",
@@ -171,7 +192,7 @@ def register_prompts(app: Any) -> None:
             "example": {"limit": 5},
         },
     )
-    def _prompt_search_collections() -> PromptMessage:
+    def _prompt_search_collections() -> list[Message]:
         schema = {
             "type": "object",
             "properties": {
@@ -193,11 +214,16 @@ def register_prompts(app: Any) -> None:
             "Example:\n"
             f"{json.dumps(payload['example'], indent=2)}"
         )
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
 
     @app.prompt(
         name="tool_get_collection_prompt",
@@ -214,7 +240,7 @@ def register_prompts(app: Any) -> None:
             "example": {"collection_id": "my-collection"},
         },
     )
-    def _prompt_get_collection() -> PromptMessage:
+    def _prompt_get_collection() -> list[Message]:
         schema = {
             "type": "object",
             "properties": {
@@ -236,11 +262,16 @@ def register_prompts(app: Any) -> None:
             "Example:\n"
             f"{json.dumps(payload['example'], indent=2)}"
         )
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
 
     @app.prompt(
         name="tool_get_item_prompt",
@@ -267,7 +298,7 @@ def register_prompts(app: Any) -> None:
             },
         },
     )
-    def _prompt_get_item() -> PromptMessage:
+    def _prompt_get_item() -> list[Message]:
         schema = {
             "type": "object",
             "properties": {
@@ -299,11 +330,16 @@ def register_prompts(app: Any) -> None:
             "Example:\n"
             f"{json.dumps(payload['example'], indent=2)}"
         )
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
 
     @app.prompt(
         name="tool_search_items_prompt",
@@ -333,7 +369,7 @@ def register_prompts(app: Any) -> None:
             "example": {"collections": ["c1"], "limit": 3},
         },
     )
-    def _prompt_search_items() -> PromptMessage:
+    def _prompt_search_items() -> list[Message]:
         schema = {
             "type": "object",
             "properties": {
@@ -386,11 +422,16 @@ def register_prompts(app: Any) -> None:
             "If 'query' is provided, ensure it conforms to the STAC API "
             "filter specification."
         )
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
 
     @app.prompt(
         name="tool_estimate_data_size_prompt",
@@ -422,7 +463,7 @@ def register_prompts(app: Any) -> None:
             "example": {"collections": ["c1"], "limit": 10, "output_format": "json"},
         },
     )
-    def _prompt_estimate_data_size() -> PromptMessage:
+    def _prompt_estimate_data_size() -> list[Message]:
         schema = {
             "type": "object",
             "properties": {
@@ -464,11 +505,16 @@ def register_prompts(app: Any) -> None:
             "Example:\n"
             f"{json.dumps(payload['example'], indent=2)}"
         )
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
 
     @app.prompt(
         name="tool_get_queryables_prompt",
@@ -485,7 +531,7 @@ def register_prompts(app: Any) -> None:
             "example": {"collection_id": "my-collection"},
         },
     )
-    def _prompt_get_queryables() -> PromptMessage:
+    def _prompt_get_queryables() -> list[Message]:
         schema = {
             "type": "object",
             "properties": {
@@ -507,11 +553,16 @@ def register_prompts(app: Any) -> None:
             "Example:\n"
             f"{json.dumps(payload['example'], indent=2)}"
         )
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
 
     @app.prompt(
         name="tool_get_aggregations_prompt",
@@ -536,7 +587,7 @@ def register_prompts(app: Any) -> None:
             "example": {"collections": ["c1"], "datetime": "2020-01-01/2020-12-31"},
         },
     )
-    def _prompt_get_aggregations() -> PromptMessage:
+    def _prompt_get_aggregations() -> list[Message]:
         schema = {
             "type": "object",
             "properties": {
@@ -566,18 +617,23 @@ def register_prompts(app: Any) -> None:
             "Example:\n"
             f"{json.dumps(payload['example'], indent=2)}"
         )
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
 
     @app.prompt(
         name="tool_ordering_info_prompt",
         description="Information on tool ordering and usage",
         meta={},
     )
-    def _prompt_tool_ordering_info() -> PromptMessage:
+    def _prompt_tool_ordering_info() -> list[Message]:
         human = (
             "Preferred order: get_root -> get_conformance -> search_collections -> "
             "get_collection -> get_queryables -> search_items -> get_item -> "
@@ -590,18 +646,23 @@ def register_prompts(app: Any) -> None:
             "parameters": {},
             "example": {},
         }
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
 
     @app.prompt(
         name="catalog_discovery_prompt",
         description="Steps to discover what a STAC catalog supports",
         meta={},
     )
-    def _prompt_catalog_discovery() -> PromptMessage:
+    def _prompt_catalog_discovery() -> list[Message]:
         human = (
             "Discovery steps:\n"
             "1) Call get_root to locate the catalog root and entrypoints.\n"
@@ -624,18 +685,23 @@ def register_prompts(app: Any) -> None:
             "parameters": {},
             "example": {},
         }
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
 
     @app.prompt(
         name="collection_alias_resolution_prompt",
         description="How to resolve collection id aliases across catalogs",
         meta={},
     )
-    def _prompt_collection_alias_resolution() -> PromptMessage:
+    def _prompt_collection_alias_resolution() -> list[Message]:
         human = (
             "Alias resolution strategy:\n"
             "1) When a collection ID lookup returns no result, normalize case "
@@ -657,18 +723,23 @@ def register_prompts(app: Any) -> None:
             "parameters": {},
             "example": {},
         }
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
 
     @app.prompt(
         name="estimate_size_strategy_prompt",
         description="Safe strategies for estimating data size at scale",
         meta={},
     )
-    def _prompt_estimate_size_strategy() -> PromptMessage:
+    def _prompt_estimate_size_strategy() -> list[Message]:
         human = (
             "Estimation strategy:\n"
             "1) Sample a modest number of items (N=10-100) across the "
@@ -691,11 +762,16 @@ def register_prompts(app: Any) -> None:
             "parameters": {},
             "example": {},
         }
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
 
     @app.prompt(
         name="explain_tool_output_prompt",
@@ -712,7 +788,7 @@ def register_prompts(app: Any) -> None:
             "example": {"tool": "get_collection", "payload": {}},
         },
     )
-    def _prompt_explain_tool_output() -> PromptMessage:
+    def _prompt_explain_tool_output() -> list[Message]:
         schema = {
             "type": "object",
             "properties": {"tool": {"type": "string"}, "payload": {"type": "object"}},
@@ -736,8 +812,13 @@ def register_prompts(app: Any) -> None:
             "Example:\n"
             '{"tool": "get_collection", "payload": {}}\n'
         )
-        return PromptMessage(
-            role="user",
-            content=TextContent(type="text", text=human),
-            _meta={"machine_payload": payload},
-        )
+        return [
+            Message(
+                role="user",
+                content=TextContent(
+                    type="text",
+                    text=human,
+                    _meta={"machine_payload": payload},
+                ),
+            )
+        ]
