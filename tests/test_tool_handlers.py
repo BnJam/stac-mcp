@@ -44,15 +44,18 @@ def test_handle_search_collections():
 def test_handle_search_items():
     """Test handle_search_items."""
     mock_client = MagicMock()
-    mock_client.search_items.return_value = [
-        {
-            "id": "item1",
-            "collection": "collection1",
-            "datetime": "2025-01-01T00:00:00Z",
-            "bbox": [1.0, 2.0, 3.0, 4.0],
-            "assets": {"data": {}},
-        }
-    ]
+    mock_client.search_items.return_value = (
+        [
+            {
+                "id": "item1",
+                "collection": "collection1",
+                "datetime": "2025-01-01T00:00:00Z",
+                "bbox": [1.0, 2.0, 3.0, 4.0],
+                "assets": {"data": {}},
+            }
+        ],
+        [],
+    )
 
     # Test text output
     result_text = handle_search_items(mock_client, {})

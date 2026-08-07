@@ -47,7 +47,7 @@ def test_cached_search_expiry_and_refresh():
         return FakeSearch([SimpleNamespace(id="a", to_dict=lambda: {"id": "a"})])
 
     client._client = SimpleNamespace(search=_search_a)
-    items1 = client._cached_search(collections=["c1"], limit=1)
+    items1, _ = client._cached_search(collections=["c1"], limit=1)
     assert items1[0].get("id") == "a"
 
     # Force cached timestamp to be old so next call triggers refresh
@@ -59,7 +59,7 @@ def test_cached_search_expiry_and_refresh():
         return FakeSearch([SimpleNamespace(id="b", to_dict=lambda: {"id": "b"})])
 
     client._client = SimpleNamespace(search=_search_b)
-    items2 = client._cached_search(collections=["c1"], limit=1)
+    items2, _ = client._cached_search(collections=["c1"], limit=1)
     assert items2[0].get("id") == "b"
 
 

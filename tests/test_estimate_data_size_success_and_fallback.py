@@ -12,14 +12,17 @@ EXPECTED_ASSETS = 2
 def test_estimate_data_size_success(mock_head, mock_search):
     """Verify data size estimation success with a mix of metadata and HEAD."""
     client = STACClient()
-    mock_search.return_value = [
-        MagicMock(
-            assets={
-                "asset1": {"extra_fields": {"file:size": ASSET_1_SIZE}},
-                "asset2": {"href": "http://test.com/asset2.tif"},
-            }
-        )
-    ]
+    mock_search.return_value = (
+        [
+            MagicMock(
+                assets={
+                    "asset1": {"extra_fields": {"file:size": ASSET_1_SIZE}},
+                    "asset2": {"href": "http://test.com/asset2.tif"},
+                }
+            )
+        ],
+        [],
+    )
     mock_head.return_value = ASSET_2_SIZE
 
     result = client.estimate_data_size(collections=["test"])

@@ -12,10 +12,13 @@ LIMIT = 10
 def test_search_items_includes_meta():
     client = MagicMock()
     client.catalog_url = "https://example.com/stac"
-    client.search_items.return_value = [
-        {"id": "item1", "collection": "col1", "assets": {}},
-        {"id": "item2", "collection": "col1", "assets": {}},
-    ]
+    client.search_items.return_value = (
+        [
+            {"id": "item1", "collection": "col1", "assets": {}},
+            {"id": "item2", "collection": "col1", "assets": {}},
+        ],
+        [],
+    )
     result = handle_search_items(
         client, {"collections": ["col1"], "limit": LIMIT, "output_format": "json"}
     )
@@ -33,7 +36,7 @@ def test_search_items_includes_meta():
 def test_search_items_has_more_when_at_limit():
     client = MagicMock()
     client.catalog_url = "https://example.com/stac"
-    client.search_items.return_value = [{"id": f"item{i}"} for i in range(LIMIT)]
+    client.search_items.return_value = ([{"id": f"item{i}"} for i in range(LIMIT)], [])
     result = handle_search_items(
         client, {"collections": ["col1"], "limit": LIMIT, "output_format": "json"}
     )
@@ -62,7 +65,7 @@ def test_search_collections_includes_meta():
 def test_search_items_text_output_includes_more_indicator():
     client = MagicMock()
     client.catalog_url = "https://example.com/stac"
-    client.search_items.return_value = [{"id": f"item{i}"} for i in range(LIMIT)]
+    client.search_items.return_value = ([{"id": f"item{i}"} for i in range(LIMIT)], [])
     result = handle_search_items(client, {"limit": LIMIT})
     text = result[0].text
     assert f"limit {LIMIT}" in text

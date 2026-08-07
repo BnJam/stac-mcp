@@ -38,7 +38,7 @@ def test_zarr_fallback_inspect(mock_cached_search, tmp_path):
     item = SimpleNamespace(
         collection_id="era5-pds", assets={"arr": asset}, datetime=None
     )
-    mock_cached_search.return_value = [item]
+    mock_cached_search.return_value = ([item], [])
 
     with patch.object(
         client,

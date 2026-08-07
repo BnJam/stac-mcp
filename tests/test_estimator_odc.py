@@ -50,7 +50,7 @@ def test_estimate_uses_odc_nbytes(monkeypatch):
     fake_item = SimpleNamespace(collection_id="sentinel-2-l2a")
 
     def _fake_cached_search(_self, **_kwargs):
-        return [fake_item]
+        return ([fake_item], [])
 
     monkeypatch.setattr(STACClient, "_cached_search", _fake_cached_search)
 

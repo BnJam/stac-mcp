@@ -14,7 +14,7 @@ def test_estimate_data_size_head_timeout(mock_cached_search):
     mock_item.assets = {
         "asset1": {"href": "http://test.com/asset1.tif", "media_type": "image/tiff"}
     }
-    mock_cached_search.return_value = [mock_item]
+    mock_cached_search.return_value = ([mock_item], [])
 
     with patch.object(
         client._head_session,  # noqa: SLF001
