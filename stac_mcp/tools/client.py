@@ -262,11 +262,10 @@ class STACClient:
         intersects: dict[str, Any] | None = None,
         ids: list[str] | None = None,
         limit: int = 10,
-    ):  # -> list[dict[str, Any]]:
+    ):  # -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         """Run a search and cache the resulting item list per-client.
 
-        Returns a list of pystac.Item objects (as returned by the underlying
-        client's search.items()).
+        Returns a tuple of (items, pagination_links).
         """
         key = self._search_cache_key(
             collections, bbox, datetime, query, limit, fields, intersects, ids, sortby
@@ -308,8 +307,18 @@ class STACClient:
             if idx + 1 >= limit:
                 break
 
-        self._search_cache[key] = (now, items)
-        return items
+        # Extract pagination links from the search result
+        pagination_links = []
+        if hasattr(search, "links"):
+            for link in search.links:
+                if isinstance(link, dict):
+                    pagination_links.append(link)
+                else:
+                    pagination_links.append(link.to_dict())
+
+        result = (items, pagination_links)
+        self._search_cache[key] = (now, result)
+        return result
 
     def _cached_collections(self, limit: int = 10) -> list[dict[str, Any]]:
         key = f"collections:limit={int(limit)}"
@@ -472,7 +481,7 @@ class STACClient:
         ids: list[str] | None = None,
         limit: int = 10,
         sign_assets: bool = False,
-    ) -> list[Any] | list[dict[str, Any]]:
+    ) -> tuple[list[Any] | list[dict[str, Any]], list[dict[str, Any]]]:
         extra_args = {}
         if query:
             self._check_conformance(CONFORMANCE_QUERY)
@@ -485,7 +494,7 @@ class STACClient:
             extra_args["fields"] = fields
         try:
             # Use cached search results (per-client) when available.
-            items = self._cached_search(
+            items, pagination_links = self._cached_search(
                 collections=collections,
                 bbox=bbox,
                 datetime=datetime,
@@ -498,7 +507,7 @@ class STACClient:
             logger.exception("Error searching items")
             raise
 
-        return self._sign_items(items, sign_assets)
+        return self._sign_items(items, sign_assets), pagination_links
 
     def get_item(
         self, collection_id: str, item_id: str, sign_assets: bool = False
@@ -563,7 +572,7 @@ class STACClient:
         # deterministic. The underlying search may return more items than the
         # requested `limit` due to provider behavior or cached results, so
         # enforce truncation here before any expensive work (odc.stac.load).
-        items = self._cached_search(
+        items, _ = self._cached_search(
             collections=collections,
             bbox=bbox,
             datetime=datetime,

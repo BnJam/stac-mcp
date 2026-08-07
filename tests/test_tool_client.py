@@ -22,7 +22,7 @@ def test_stac_client_session_dependency():
 @patch("stac_mcp.tools.client.STACClient._cached_search")
 def test_estimate_data_size_no_items(mock_cached_search):
     """Test data size estimation when no items are returned."""
-    mock_cached_search.return_value = []
+    mock_cached_search.return_value = ([], [])
     client = STACClient()
     result = client.estimate_data_size(collections=["test"])
     assert result["item_count"] == 0
@@ -35,7 +35,7 @@ def test_estimate_data_size_with_metadata(mock_cached_search):
     client = STACClient()
     mock_item = MagicMock()
     mock_item.assets = {"asset1": {"extra_fields": {"file:size": ASSET_1_SIZE}}}
-    mock_cached_search.return_value = [mock_item]
+    mock_cached_search.return_value = ([mock_item], [])
 
     result = client.estimate_data_size(collections=["test"])
     assert result["estimated_size_bytes"] == ASSET_1_SIZE
@@ -50,7 +50,7 @@ def test_estimate_data_size_with_head_request(mock_cached_search):
     mock_item.assets = {
         "asset1": {"href": "http://test.com/asset1.tif", "media_type": "image/tiff"}
     }
-    mock_cached_search.return_value = [mock_item]
+    mock_cached_search.return_value = ([mock_item], [])
 
     with patch.object(
         client._head_session,  # noqa: SLF001

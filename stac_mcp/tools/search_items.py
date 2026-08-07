@@ -23,7 +23,7 @@ def handle_search_items(
     ids = arguments.get("ids")
     sortby = arguments.get("sortby")
     sign_assets = arguments.get("sign_assets", False)
-    items = client.search_items(
+    items, pagination_links = client.search_items(
         collections=collections,
         bbox=bbox,
         datetime=dt,
@@ -51,6 +51,7 @@ def handle_search_items(
         },
         "returned": returned,
         "has_more": has_more,
+        "links": pagination_links,
     }
     if arguments.get("output_format") == "json":
         return {"type": "item_list", "count": returned, "items": items, "meta": meta}
@@ -81,4 +82,10 @@ def handle_search_items(
         result_text += "Assets found across items:\n"
         for key in sorted(asset_keys):
             result_text += f" - {key}\n"
+    if pagination_links:
+        result_text += "\n**Pagination Links:**\n"
+        for link in pagination_links:
+            rel = link.get("rel", "unknown")
+            href = link.get("href", "")
+            result_text += f"  - {rel}: {href}\n"
     return [TextContent(type="text", text=result_text)]

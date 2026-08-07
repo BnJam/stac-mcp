@@ -51,7 +51,7 @@ def test_sensor_native_dual_report(monkeypatch):
     fake_item = SimpleNamespace(collection_id="sentinel-2-l2a")
 
     def _fake_cached_search(_self, **_kwargs):
-        return [fake_item]
+        return ([fake_item], [])
 
     monkeypatch.setattr(STACClient, "_cached_search", _fake_cached_search)
 
@@ -87,7 +87,7 @@ def test_message_summarization(monkeypatch):
     fake_item = SimpleNamespace(collection_id="sentinel-2-l2a")
 
     def _fake_cached_search(_self, **_kwargs):
-        return [fake_item]
+        return ([fake_item], [])
 
     monkeypatch.setattr(STACClient, "_cached_search", _fake_cached_search)
 
@@ -122,7 +122,7 @@ def test_numeric_total_preservation(monkeypatch):
     fake_item = SimpleNamespace(collection_id="sentinel-2-l2a")
 
     def _fake_cached_search(_self, **_kwargs):
-        return [fake_item]
+        return ([fake_item], [])
 
     monkeypatch.setattr(STACClient, "_cached_search", _fake_cached_search)
 

@@ -105,12 +105,14 @@ def test_search_items(stac_client, monkeypatch):
         _mk_item("i1", "c1"),
         _mk_item("i2", "c1"),
     ]
+    search_mock.links = []
     mock_client = MagicMock()
     mock_client.search.return_value = search_mock
     monkeypatch.setattr(stac_client, "_client", mock_client)
-    res = stac_client.search_items(collections=["c1"], limit=5)
+    res, links = stac_client.search_items(collections=["c1"], limit=5)
     assert len(res) == NUM_ITEMS
     assert isinstance(res, list)
+    assert isinstance(links, list)
     assert isinstance(res[0], dict)
     assert res[0].get("id") == "i1"
 

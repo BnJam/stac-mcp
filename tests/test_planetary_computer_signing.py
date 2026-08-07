@@ -70,14 +70,18 @@ def test_search_items_with_sign_assets():
     client._conformance = []  # noqa: SLF001
     mock_search = MagicMock()
     mock_search.items.return_value = iter([])
+    mock_search.links = []
     client._client.search.return_value = mock_search  # noqa: SLF001
 
     mock_pc = MagicMock()
     mock_pc.sign.return_value = "http://example.com/data.tif?signed=true"
 
     with patch.dict("sys.modules", {"planetary_computer": mock_pc}):
-        result = client.search_items(collections=["test"], sign_assets=True, limit=1)
+        result, links = client.search_items(
+            collections=["test"], sign_assets=True, limit=1
+        )
     assert isinstance(result, list)
+    assert isinstance(links, list)
 
 
 def test_get_item_with_sign_assets():
