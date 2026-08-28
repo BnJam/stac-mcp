@@ -139,6 +139,33 @@ The server implements the [Model Context Protocol (MCP)](https://github.com/Mode
 }
 ```
 
+#### Configuring the Default Catalog
+
+By default, the server queries the [Microsoft Planetary Computer](https://planetarycomputer.microsoft.com/api/stac/v1)
+STAC API. To point every tool call at a self-hosted or alternative STAC API without
+passing `catalog_url` on each request, set the `STAC_MCP_CATALOG_URL` environment
+variable:
+
+```json
+{
+  "stac": {
+    "command": "uvx",
+    "args": [
+      "--from",
+      "git+https://github.com/wayfinder-foundry/stac-mcp",
+      "stac-mcp"
+    ],
+    "transport": "stdio",
+    "env": {
+      "STAC_MCP_CATALOG_URL": "https://your-stac-api.example.com/stac/v1"
+    }
+  }
+}
+```
+
+An explicit `catalog_url` argument passed to a tool always takes precedence over
+this environment variable.
+
 ##### Published Image
 
 ```bash

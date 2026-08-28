@@ -500,6 +500,7 @@ def get_catalog_client(catalog_url: str | None = None) -> STACClient:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `STAC_CATALOG_URL` | Planetary Computer | Default STAC catalog endpoint |
+| `STAC_MCP_CATALOG_URL` | Planetary Computer | Default `STACClient` catalog URL when no `catalog_url` argument is given |
 | `STAC_API_KEY` | None | API key for authenticated catalogs |
 | `STAC_MCP_CA_BUNDLE` | None | Custom CA bundle for SSL |
 | `STAC_MCP_UNSAFE_DISABLE_SSL` | False | Disable SSL verification (dev only) |
