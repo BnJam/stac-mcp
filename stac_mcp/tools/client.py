@@ -145,16 +145,14 @@ class STACClient:
         except (TypeError, ValueError):
             self.search_cache_ttl_seconds = 300
         # Catalog URL and request headers for this client instance.
-        # If the caller passed None, fall back to STAC_MCP_CATALOG_URL (when
-        # set) and finally the package default so transaction helpers can
-        # safely build URLs.
+        # If the caller passed None, fall back to STAC_MCP_DEFAULT_CATALOG
+        # (when set and non-empty, see ADR 0010) and finally the package
+        # default so transaction helpers can safely build URLs.
         self.catalog_url = (
             catalog_url
             if catalog_url is not None
-            else os.getenv(
-                "STAC_MCP_CATALOG_URL",
-                "https://planetarycomputer.microsoft.com/api/stac/v1",
-            )
+            else os.getenv("STAC_MCP_DEFAULT_CATALOG")
+            or "https://planetarycomputer.microsoft.com/api/stac/v1"
         )
         self.headers = headers or {}
         # Lazy-initialized underlying pystac-client instance and cached
