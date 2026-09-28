@@ -207,7 +207,7 @@ def handle_search_items(
 ### Documentation Claims
 
 GUIDELINES.md lists environment variables:
-- `STAC_CATALOG_URL`
+- `STAC_MCP_DEFAULT_CATALOG`
 - `STAC_API_KEY`
 - `STAC_MCP_CA_BUNDLE`
 - `STAC_MCP_UNSAFE_DISABLE_SSL`

@@ -551,7 +551,7 @@ async def configure_catalog(
 ) -> dict:
     """Configure STAC catalog with logging."""
     # Use env var if not provided
-    url = catalog_url or os.getenv("STAC_CATALOG_URL")
+    url = catalog_url or os.getenv("STAC_MCP_DEFAULT_CATALOG")
     
     if ctx:
         await ctx.info(f"[configure_catalog] Using catalog: {url}")

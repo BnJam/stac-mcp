@@ -37,3 +37,4 @@ Behavior:
 * Future: may add `STAC_MCP_CACHE_TTL_SECONDS` aligned with ADR 0011.
 * 2025-10-06: Added `STAC_MCP_SSL_INSECURE_FALLBACK` for limited, read-only retry on SSL verification failure to reduce friction in environments with intercepting proxies.
 * 2026-08-06: Accepted. Implementation verified: `STAC_MCP_REQUEST_TIMEOUT`, `STAC_MCP_SEARCH_CACHE_TTL_SECONDS`, and other env vars are in use across the codebase.
+* 2026-09-29: Implemented `STAC_MCP_DEFAULT_CATALOG` in `STACClient.__init__` (`stac_mcp/tools/client.py`). An explicit `catalog_url` argument takes precedence; an unset or empty value falls back to the Planetary Computer default. Read inline, following the existing env-var pattern, rather than via a central config module (#143).

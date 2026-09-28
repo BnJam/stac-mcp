@@ -143,7 +143,7 @@ The server implements the [Model Context Protocol (MCP)](https://github.com/Mode
 
 By default, the server queries the [Microsoft Planetary Computer](https://planetarycomputer.microsoft.com/api/stac/v1)
 STAC API. To point every tool call at a self-hosted or alternative STAC API without
-passing `catalog_url` on each request, set the `STAC_MCP_CATALOG_URL` environment
+passing `catalog_url` on each request, set the `STAC_MCP_DEFAULT_CATALOG` environment
 variable:
 
 ```json
@@ -157,7 +157,7 @@ variable:
     ],
     "transport": "stdio",
     "env": {
-      "STAC_MCP_CATALOG_URL": "https://your-stac-api.example.com/stac/v1"
+      "STAC_MCP_DEFAULT_CATALOG": "https://your-stac-api.example.com/stac/v1"
     }
   }
 }
